@@ -20,6 +20,11 @@ module SafeYAML
 
       hash = {}
 
+      if node.type_id == "tag:yaml.org,2002:map:HashWithIndifferentAccess" &&
+          hash.respond_to?(:with_indifferent_access)
+        hash = hash.with_indifferent_access
+      end
+
       # Take the "<<" key nodes first, as these are meant to approximate a form of inheritance.
       inheritors = map.keys.select { |node| resolve_node(node) == "<<" }
       inheritors.each do |key|
