@@ -12,7 +12,8 @@ require "safe_yaml/version"
 module SafeYAML
   OPTIONS = {
     :enable_symbol_parsing => false,
-    :enable_arbitrary_object_deserialization => false
+    :enable_arbitrary_object_deserialization => false,
+    :enable_safe_load_warnings => true,
   }
 
   def self.using_psych?
@@ -135,6 +136,18 @@ module YAML
     def disable_arbitrary_object_deserialization!
       SafeYAML::OPTIONS[:enable_arbitrary_object_deserialization] = false
     end
+
+    def enable_safe_load_warnings?
+      SafeYAML::OPTIONS[:enable_safe_load_warnings]
+    end
+
+    def enable_safe_load_warnings!
+      SafeYAML::OPTIONS[:enable_safe_load_warnings] = true
+    end
+
+    def disable_safe_load_warnings!
+      SafeYAML::OPTIONS[:enable_safe_load_warnings] = false
+    end
   end
 
   private
@@ -143,7 +156,9 @@ module YAML
 
     if safe_mode.nil?
       mode = SafeYAML::OPTIONS[:enable_arbitrary_object_deserialization] ? "unsafe" : "safe"
-      Kernel.warn "Called '#{method}' without the :safe option -- defaulting to #{mode} mode."
+      if SafeYAML::OPTIONS[:enable_safe_load_warnings]
+        Kernel.warn "Called '#{method}' without the :safe option -- defaulting to #{mode} mode."
+      end
       safe_mode = !SafeYAML::OPTIONS[:enable_arbitrary_object_deserialization]
     end
 
