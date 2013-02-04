@@ -19,6 +19,10 @@ module SafeYAML
       map = node.value
 
       hash = {}
+      if node.type_id == "tag:yaml.org,2002:map:HashWithIndifferentAccess"
+        hash = hash.with_indifferent_access
+      end
+
       map.each do |key_node, value_node|
         if resolve_node(key_node) == "<<"
           hash.merge!(resolve_node(value_node))
